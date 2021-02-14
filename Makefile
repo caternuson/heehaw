@@ -1,32 +1,29 @@
-PROJECT=foo
-GCC_DIR=/opt/gcc-arm-none-eabi-10-2020-q4-major
-QPC_DIR=qpc
-QPC_PORT=$(QPC_DIR)/ports/arm-cm/qxk/gnu
-LINKER_SCRIPT=ldscripts/samd10d14am_flash.ld
+BOARD=foo
+include boards/$(BOARD)/board.mk
 
-BIN_DIR      := build
-TARGET_BIN   := $(BIN_DIR)/$(PROJECT).bin
-TARGET_ELF   := $(BIN_DIR)/$(PROJECT).elf
+BUILD_DIR    = build/$(BOARD)
+TARGET_BIN   = $(BUILD_DIR)/$(BOARD).bin
+TARGET_ELF   = $(BUILD_DIR)/$(BOARD).elf
 
-CC    := $(GCC_DIR)/bin/arm-none-eabi-gcc
-LINK  := $(GCC_DIR)/bin/arm-none-eabi-gcc
-BIN   := $(GCC_DIR)/bin/arm-none-eabi-objcopy
+CC    = arm-none-eabi-gcc
+LINK  = arm-none-eabi-gcc
+BIN   = arm-none-eabi-objcopy
 
 VPATH = \
+	qpc/src/qf \
+	qpc/src/qs \
+	qpc/src/qxk \
+	qpc/ports/arm-cm/qxk/gnu \
 	src \
 	inc \
-	$(QPC_DIR)/src/qf \
-	$(QPC_DIR)/src/qs \
-	$(QPC_DIR)/src/qxk \
-	$(QPC_PORT)
 
 INCLUDES = \
-	-I$(QPC_DIR)/include \
-	-I$(QPC_DIR)/src \
-	-I$(QPC_PORT) \
+	-Iqpc/include \
+	-Iqpc/src \
+	-Iqpc/ports/arm-cm/qxk/gnu \
 	-Iinc
 
-QPC_SRCS := \
+QPC_SRCS = \
 	qep_hsm.c \
 	qep_msm.c \
 	qf_act.c \
@@ -42,12 +39,12 @@ QPC_SRCS := \
 	qxk.c \
 	qxk_port.c
 
-C_SRCS := $(QPC_SRCS) \
+C_SRCS = $(QPC_SRCS) \
 	src/main.c
 
-C_OBJS := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
+C_OBJS = $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
 
-C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
+C_OBJS_EXT = $(addprefix $(BUILD_DIR)/, $(C_OBJS))
 
 COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g3
 WFLAGS = -Wall
@@ -56,9 +53,9 @@ CFLAGS = -c \
 LFLAGS = $(COMMON_FLAGS) $(WFLAGS) \
 	-T$(LINKER_SCRIPT) -mfpu=vfp -mfloat-abi=softfp \
 	-specs=nosys.specs -specs=nano.specs \
-	-Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections 
+	-Wl,-Map,$(BUILD_DIR)/$(BOARD_NAME).map,--cref,--gc-sections 
 
-$(shell mkdir -p $(BIN_DIR))
+$(shell mkdir -p $(BUILD_DIR))
 
 all: $(TARGET_BIN)
 
@@ -68,5 +65,8 @@ $(TARGET_BIN): $(TARGET_ELF)
 $(TARGET_ELF): $(C_OBJS_EXT)
 	$(LINK) $(LFLAGS) -o $@ $^
 
-$(BIN_DIR)/%.o : %.c
+$(BUILD_DIR)/%.o : %.c
 	$(CC) $(CFLAGS) $< -o $@
+
+clean:
+	rm -rf $(BUILD_DIR)
