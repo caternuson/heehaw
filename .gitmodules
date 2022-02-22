@@ -1,4 +1,6 @@
 [submodule "asf4"]
 	path = asf4
 	url = https://github.com/adafruit/asf4.git
-	branch = circuitpython
+[submodule "qpc"]
+	path = qpc
+	url = https://github.com/QuantumLeaps/qpc.git
