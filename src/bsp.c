@@ -2,9 +2,9 @@
 #include "bsp.h"
 
 // heehaw
-#define LED0 GPIO(GPIO_PORTB, 22)
+//#define LED0 GPIO(GPIO_PORTB, 22)
 // heehaw10
-//#define LED0 GPIO(GPIO_PORTA, 27)
+#define LED0 GPIO(GPIO_PORTA, 27)
 
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);

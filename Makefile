@@ -53,7 +53,7 @@ OBJ = $(addprefix $(BUILD)/, $(SRC:.c=.o))
 TARGET_BIN   = $(BUILD)/$(BOARD).bin
 TARGET_ELF   = $(BUILD)/$(BOARD).elf
 
-COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -O0 -g3 -D__$(CHIP_VARIANT)__ -D__ARM_ARCH=6 -DCONF_DFLL_USBCRM=0
+COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g3 -D__$(CHIP_VARIANT)__ -D__ARM_ARCH=6 -DCONF_DFLL_USBCRM=0
 WFLAGS = -Wall
 CFLAGS = -c $(COMMON_FLAGS) $(WFLAGS) $(INC)
 LFLAGS = $(COMMON_FLAGS) $(WFLAGS) \
